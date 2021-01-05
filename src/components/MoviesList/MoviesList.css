@@ -1,0 +1,21 @@
+.movie-list {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+@media screen and (min-width: 823px) {
+  .movie-list {
+    align-items: normal;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+@media screen and (min-width: 970px) {
+  .movie-list {
+    gap: 32px;
+  }
+}
