@@ -9,12 +9,9 @@ type MoviesListProps = {
 };
 
 function MoviesList({ moviesList }: MoviesListProps) {
-  const movies = moviesList.map((movie) => <MovieCard movieData={movie} />);
-  return (
-    <section className="movies">
-      <ul className="movie-list">{movies}</ul>
-    </section>
-  );
+  const movies = moviesList.map((movie) => <MovieCard movieData={movie} key={movie.id} />);
+
+  return <ul className="movie-list">{movies}</ul>;
 }
 
 export default MoviesList;

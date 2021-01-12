@@ -1,15 +1,21 @@
 import React from 'react';
+import { format } from 'date-fns';
 import cutText from '../../lib/cutText';
 
 import './MovieCard.css';
+import { MovieData } from '../../services/MovieService';
 
-const MovieCard = ({ movieData }: any) => {
+type MovieCardProps = {
+  movieData: MovieData;
+};
+
+const MovieCard = ({ movieData }: MovieCardProps) => {
   const {
     original_title: originalTitle,
     overview,
+    poster_path: posterPath,
     release_date: releaseDate,
     vote_average: voteAverage,
-    poster_path: posterPath,
   } = movieData;
   return (
     <li className="movie-list__item movie-item">
@@ -20,7 +26,7 @@ const MovieCard = ({ movieData }: any) => {
         <div className="card__title-container">
           <h2 className="card__title">{originalTitle}</h2>
           <span className="card__rating">{voteAverage}</span>
-          <time className="card__datetime">{releaseDate}</time>
+          <time className="card__datetime">{format(new Date(releaseDate), 'LLLL d, yyyy')}</time>
           <ul className="genre-list">
             <li className="genre-list__item">Action</li>
             <li className="genre-list__item">Drama</li>

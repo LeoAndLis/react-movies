@@ -116,7 +116,7 @@
 
   .movie-item {
     padding: 6px 10px 0 10px;
-    max-width: 387px;
+    max-width: 48%;
   }
 
   .card__img-container {
@@ -124,7 +124,7 @@
   }
 }
 
-@media screen and (min-width: 970px) {
+@media screen and (min-width: 1008px) {
   .card {
     column-gap: 20px;
     grid-template-areas:
