@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Spin } from 'antd';
+import { Alert, Pagination, Spin } from 'antd';
 import { debounce } from 'lodash';
 import MoviesList from './components/MoviesList/MoviesList';
 import Search from './components/Search/Search';
@@ -10,9 +10,11 @@ import './App.css';
 type AppState = {
   currentPage: number;
   error: boolean;
-  hasData: boolean;
+  hasMovies: boolean;
+  hideOnSinglePage: boolean;
   loading: boolean;
   moviesList: MovieData[];
+  totalMovies: number;
   queryString: string;
 };
 
@@ -24,9 +26,11 @@ class App extends Component<AppProps, AppState> {
   state: AppState = {
     currentPage: 1,
     error: false,
-    hasData: false,
+    hasMovies: false,
+    hideOnSinglePage: true,
     loading: true,
     moviesList: [],
+    totalMovies: 0,
     queryString: 'return',
   };
 
@@ -36,8 +40,8 @@ class App extends Component<AppProps, AppState> {
 
   componentDidUpdate(prevProps: Readonly<AppProps>, prevState: Readonly<AppState>) {
     const { currentPage } = this.state;
-    if (prevState.currentPage !== currentPage) {
-      console.log(`change page from ${prevState.currentPage} to ${currentPage}`);
+    if (currentPage !== prevState.currentPage) {
+      this.updateList();
     }
   }
 
@@ -49,20 +53,30 @@ class App extends Component<AppProps, AppState> {
     if (queryString === '') {
       this.setState({
         error: false,
-        hasData: false,
+        hasMovies: false,
       });
       return;
     }
 
     this.setState({
       error: false,
-      hasData: false,
       loading: true,
       queryString,
     });
 
     this.updateList();
   }, 500);
+
+  onChangePage = (page: number) => {
+    const { currentPage } = this.state;
+    if (page !== currentPage) {
+      this.setState({
+        error: false,
+        loading: true,
+        currentPage: page,
+      });
+    }
+  };
 
   onError = () => {
     this.setState({
@@ -72,25 +86,47 @@ class App extends Component<AppProps, AppState> {
   };
 
   updateList() {
-    const { queryString } = this.state;
+    const { currentPage, queryString } = this.state;
+    console.log(`updateList  ${currentPage}`);
     this.movies
-      .getMovies(queryString)
+      .getMovies(queryString, currentPage)
       .then((result) => {
         this.setState({
           moviesList: result.results,
           loading: false,
-          hasData: true,
+          hasMovies: !!result.total_results,
+          totalMovies: result.total_results,
         });
       })
       .catch(this.onError);
   }
 
   render() {
-    const { error, hasData, loading, moviesList, queryString } = this.state;
+    const {
+      currentPage,
+      error,
+      hasMovies,
+      hideOnSinglePage,
+      loading,
+      moviesList,
+      totalMovies,
+      queryString,
+    } = this.state;
 
-    const errorMessage = error && <Alert message="Error" description="No movies found for your request" type="error" />;
+    const errorMessage = error && <Alert message="Error" description="No movies found by your request" type="error" />;
     const spinner = loading && <Spin tip="Loading..." />;
-    const content = !(error || loading) && hasData && <MoviesList moviesList={moviesList} />;
+    const content = !(error || loading) && hasMovies && <MoviesList moviesList={moviesList} />;
+    const pagination = !(error || loading) && hasMovies && (
+      <Pagination
+        current={currentPage}
+        defaultPageSize={20}
+        hideOnSinglePage={hideOnSinglePage}
+        onChange={this.onChangePage}
+        size="small"
+        showSizeChanger={false}
+        total={totalMovies}
+      />
+    );
 
     return (
       <main className="main">
@@ -106,17 +142,7 @@ class App extends Component<AppProps, AppState> {
           {spinner}
           {content}
         </section>
-        <section className="pagination">
-          <ul className="pages-lis">
-            <li className="pages-list__item prev-page">prev</li>
-            <li className="pages-list__item">1</li>
-            <li className="pages-list__item">2</li>
-            <li className="pages-list__item">3</li>
-            <li className="pages-list__item">4</li>
-            <li className="pages-list__item">5</li>
-            <li className="pages-list__item next-page">next</li>
-          </ul>
-        </section>
+        {pagination}
       </main>
     );
   }

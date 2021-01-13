@@ -17,6 +17,7 @@ const MovieCard = ({ movieData }: MovieCardProps) => {
     release_date: releaseDate,
     vote_average: voteAverage,
   } = movieData;
+  const movieDate = releaseDate ? format(new Date(releaseDate), 'MMMM d, yyyy') : '';
   return (
     <li className="movie-list__item movie-item">
       <article className="card">
@@ -26,7 +27,7 @@ const MovieCard = ({ movieData }: MovieCardProps) => {
         <div className="card__title-container">
           <h2 className="card__title">{originalTitle}</h2>
           <span className="card__rating">{voteAverage}</span>
-          <time className="card__datetime">{format(new Date(releaseDate), 'LLLL d, yyyy')}</time>
+          <time className="card__datetime">{movieDate}</time>
           <ul className="genre-list">
             <li className="genre-list__item">Action</li>
             <li className="genre-list__item">Drama</li>

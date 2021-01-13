@@ -1,4 +1,4 @@
-function cutText(text: string) {
+function cutText(text: string): string {
   if (text.length <= 150) {
     return text;
   }

@@ -8,10 +8,30 @@
 .movies {
   display: flex;
   justify-content: center;
+  margin-bottom: 20px;
+}
+
+.main .ant-pagination{
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+}
+
+.main .ant-pagination-item-active {
+  background: #1890FF;
+  border-radius: 4px;
+}
+
+.main .ant-pagination-item-active a {
+  color: #FFFFFF;
 }
 
 @media screen and (min-width: 823px) {
   .main {
     padding: 35px;
+  }
+
+  .movies {
+    margin-bottom: 40px;
   }
 }
