@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import { Alert, Pagination, Spin } from 'antd';
 import { debounce } from 'lodash';
+
 import MoviesList from './components/MoviesList/MoviesList';
 import Search from './components/Search/Search';
-import MovieService, { MovieData } from './services/MovieService';
+import MovieService from './services/MovieService';
+
+import MovieData from './components/MovieCard/MovieData';
 
 import './App.css';
 
@@ -91,11 +94,12 @@ class App extends Component<AppProps, AppState> {
     this.movies
       .getMovies(queryString, currentPage)
       .then((result) => {
+        console.log(result);
         this.setState({
-          moviesList: result.results,
+          moviesList: result.movieList,
           loading: false,
-          hasMovies: !!result.total_results,
-          totalMovies: result.total_results,
+          hasMovies: !!result.totalResults,
+          totalMovies: result.totalResults,
         });
       })
       .catch(this.onError);

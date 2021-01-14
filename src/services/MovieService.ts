@@ -1,12 +1,4 @@
-export type MovieData = {
-  id: number;
-  tittle: string;
-  original_title: string;
-  overview: string;
-  poster_path: string;
-  release_date: string;
-  vote_average: number;
-};
+import transformMovieData from './DataProcessing';
 
 export default class MovieService {
   protected readonly API_KEY = 'b25f126af2294cd8333cc6c198c6c174';
@@ -43,13 +35,24 @@ export default class MovieService {
     return response.json();
   }
 
-  public getMovies(query: string, page: number = 1) {
+  public async getMovies(query: string, page: number = 1) {
     const params = {
       query,
       page,
     };
 
-    return this.getResource(`${this.API_SEARCH_MOVIE_PATH}`, params);
+    const { page: currentPage, results, total_pages: totalPages, total_results: totalResults } = await this.getResource(
+      `${this.API_SEARCH_MOVIE_PATH}`,
+      params,
+    );
+
+    if (totalResults === 0) {
+      throw Error('No results');
+    }
+
+    const movieList = results.map(transformMovieData);
+
+    return { currentPage, movieList, totalPages, totalResults };
   }
 
   public getGenres() {

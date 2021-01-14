@@ -116,7 +116,7 @@
 
   .movie-item {
     padding: 6px 10px 0 10px;
-    max-width: 48%;
+    width: 48%;
   }
 
   .card__img-container {

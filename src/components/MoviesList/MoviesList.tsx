@@ -2,7 +2,7 @@ import React from 'react';
 import MovieCard from '../MovieCard/MovieCard';
 
 import './MoviesList.css';
-import { MovieData } from '../../services/MovieService';
+import MovieData from '../MovieCard/MovieData';
 
 type MoviesListProps = {
   moviesList: MovieData[];
