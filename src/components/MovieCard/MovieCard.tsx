@@ -1,5 +1,6 @@
 import React from 'react';
-
+import { Rate } from 'antd';
+import classNames from 'classnames';
 import MovieData from './MovieData';
 
 import './MovieCard.css';
@@ -18,7 +19,15 @@ const MovieCard = ({ movieData }: MovieCardProps) => {
         </div>
         <div className="card__title-container">
           <h2 className="card__title">{title}</h2>
-          <span className="card__rating">{voteAverage}</span>
+          <span
+            className={classNames('card__rating', {
+              'card__rating--normal': voteAverage >= 3 && voteAverage < 5,
+              'card__rating--good': voteAverage >= 5 && voteAverage < 7,
+              'card__rating--perfection': voteAverage >= 7,
+            })}
+          >
+            {voteAverage}
+          </span>
           <time className="card__datetime">{releaseDate}</time>
           <ul className="genre-list">
             <li className="genre-list__item">Action</li>
@@ -26,18 +35,7 @@ const MovieCard = ({ movieData }: MovieCardProps) => {
           </ul>
         </div>
         <p className="card__overview">{overview}</p>
-        <ul className="voting-list card__voting">
-          <li className="voting-list__item">*</li>
-          <li className="voting-list__item">*</li>
-          <li className="voting-list__item">*</li>
-          <li className="voting-list__item">*</li>
-          <li className="voting-list__item">*</li>
-          <li className="voting-list__item">*</li>
-          <li className="voting-list__item">*</li>
-          <li className="voting-list__item">*</li>
-          <li className="voting-list__item">*</li>
-          <li className="voting-list__item">*</li>
-        </ul>
+        <Rate className="voting-list card__voting" count={10} />
       </article>
     </li>
   );

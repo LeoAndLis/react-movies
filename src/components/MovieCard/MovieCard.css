@@ -13,6 +13,7 @@
           "rating rating";
   grid-template-columns: 70px auto;
   grid-template-rows: auto auto 46px;
+  height: 100%;
 }
 
 .card__img-container {
@@ -34,7 +35,7 @@
 }
 
 .card__rating {
-  border: 2px solid #E9D100;
+  border: 2px solid #E90000;
   border-radius: 50%;
   display: grid;
   place-content: center;
@@ -43,6 +44,18 @@
   right: 5px;
   top: 5px;
   width: 35px;
+}
+
+.card__rating--normal {
+  border-color: #E97E00;
+}
+
+.card__rating--good {
+  border-color: #E9D100;
+}
+
+.card__rating--perfection {
+  border-color: #66E900;
 }
 
 .card__datetime {
@@ -78,7 +91,12 @@
   grid-area: rating;
   justify-self: end;
   justify-content: space-around;
+  margin-right: 10px;
   width: 239px;
+}
+
+.ant-rate-star:not(:last-child) {
+  margin-right: 2px;
 }
 
 @media screen and (min-width: 477px) {
