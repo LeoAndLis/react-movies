@@ -2,6 +2,7 @@ import React from 'react';
 import { Rate } from 'antd';
 import classNames from 'classnames';
 import MovieData from './MovieData';
+import { GenresListConsumer } from '../GenresListContext/GenresListContext';
 
 import './MovieCard.css';
 
@@ -11,6 +12,19 @@ type MovieCardProps = {
 
 const MovieCard = ({ movieData }: MovieCardProps) => {
   const { title, overview, posterPath, releaseDate, voteAverage } = movieData;
+  const genres = (
+    <GenresListConsumer>
+      {(genresList) => (
+        <ul className="genre-list">
+          {movieData.genreIds.map((genreId) => (
+            <li key={genreId} className="genre-list__item">
+              {genresList.get(genreId)}
+            </li>
+          ))}
+        </ul>
+      )}
+    </GenresListConsumer>
+  );
   return (
     <li className="movie-list__item movie-item">
       <article className="card">
@@ -29,10 +43,7 @@ const MovieCard = ({ movieData }: MovieCardProps) => {
             {voteAverage}
           </span>
           <time className="card__datetime">{releaseDate}</time>
-          <ul className="genre-list">
-            <li className="genre-list__item">Action</li>
-            <li className="genre-list__item">Drama</li>
-          </ul>
+          {genres}
         </div>
         <p className="card__overview">{overview}</p>
         <Rate className="voting-list card__voting" count={10} />

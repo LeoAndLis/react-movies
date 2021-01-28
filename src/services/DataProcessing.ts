@@ -1,10 +1,8 @@
 import { format } from 'date-fns';
-
 import MovieData from '../components/MovieCard/MovieData';
-
 import noImage from '../images/no_img.png';
 
-const MOVIE_IMG_PATH: string = 'https://image.tmdb.org/t/p/w500';
+const MOVIE_IMG_PATH = 'https://image.tmdb.org/t/p/w500';
 const MOVIE_OVERVIEW_LENGTH = 150;
 
 function cutText(text: string): string {
@@ -58,4 +56,18 @@ function transformMovieData(movie: any): MovieData {
   };
 }
 
-export default transformMovieData;
+type GenresListElement = {
+  id: number;
+  name: string;
+};
+
+function transformGenresList(genresList: any): Map<number, string> {
+  const formatedGenres = new Map();
+  genresList.forEach((element: GenresListElement) => {
+    formatedGenres.set(element.id, element.name);
+  });
+
+  return formatedGenres;
+}
+
+export { transformMovieData, transformGenresList };

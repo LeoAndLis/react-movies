@@ -11,6 +11,22 @@
   margin-bottom: 20px;
 }
 
+.ant-tabs {
+  margin: 0 auto;
+  width: 146px;
+}
+
+.ant-tabs-nav-list {
+  gap: 16px;
+}
+
+.ant-tabs-tab{
+  font-size: 16px;
+  justify-content: center;
+  margin: 0;
+  width: 65px;
+}
+
 .main .ant-pagination{
   display: flex;
   gap: 3px;
