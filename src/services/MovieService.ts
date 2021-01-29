@@ -87,7 +87,7 @@ export default class MovieService {
   }
 
   public rateMovie(sessionId: string, movieId: number, value: number) {
-    const path = this.API_GET_RATED_MOVIES_PATH.replace('{movie_id}', movieId.toString());
+    const path = this.API_RATE_MOVIE_PATH.replace('{movie_id}', movieId.toString());
     const body = { value };
     const params = { guest_session_id: sessionId };
 

@@ -30,6 +30,8 @@ type AppProps = {};
 class App extends Component<AppProps, AppState> {
   movies = new MovieService();
 
+  ratedMovies = new Map();
+
   genresList = new Map();
 
   state: AppState = {
@@ -106,6 +108,15 @@ class App extends Component<AppProps, AppState> {
     }
   };
 
+  onRateMovie = (id: number, rating: number) => {
+    const { sessionId } = this.state;
+    this.ratedMovies.set(id, rating);
+    console.log(this.ratedMovies);
+    this.movies.rateMovie(sessionId, id, rating)
+      .then((result) => console.log('rate movie', result))
+      .catch(this.onError);
+  };
+
   onError = (error: Error) => {
     this.setState({
       error: true,
@@ -166,7 +177,7 @@ class App extends Component<AppProps, AppState> {
     const errorBlock = error && <Alert message="Error" description={errorMessage} type="error" />;
     const search = currentTab === 'Search' && <Search setQuery={this.onSetQuery} queryString={queryString} />;
     const spinner = loading && <Spin tip="Loading..." />;
-    const content = !(error || loading) && hasMovies && <MoviesList moviesList={moviesList} />;
+    const content = !(error || loading) && hasMovies && <MoviesList moviesList={moviesList} onRateMovie={this.onRateMovie} ratedMovies={this.ratedMovies} />;
     const pagination = !(error || loading) && hasMovies && (
       <Pagination
         current={currentPage}
