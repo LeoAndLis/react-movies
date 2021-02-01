@@ -1,13 +1,13 @@
 import React from 'react';
 import MovieCard from '../MovieCard/MovieCard';
+import MovieData from '../MovieCard/MovieData';
 
 import './MoviesList.css';
-import MovieData from '../MovieCard/MovieData';
 
 type MoviesListProps = {
   moviesList: MovieData[];
   onRateMovie: (id: number, rating: number) => void;
-  ratedMovies: Map<number,number>
+  ratedMovies: Map<number, number>
 };
 
 function MoviesList({ moviesList, onRateMovie, ratedMovies }: MoviesListProps) {

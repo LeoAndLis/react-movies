@@ -1,5 +1,8 @@
 import React from 'react';
 
-const { Provider: GenresListProvider, Consumer: GenresListConsumer } = React.createContext(new Map());
+const {
+  Provider: GenresListProvider,
+  Consumer: GenresListConsumer,
+} = React.createContext(new Map());
 
 export { GenresListProvider, GenresListConsumer };

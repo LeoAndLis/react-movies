@@ -53,7 +53,11 @@ class App extends Component<AppProps, AppState> {
       this.genresList = new Map(genres.entries());
       return this.genresList;
     });
-    this.movies.getSessionId().then((result) => this.setState({ sessionId: result.guest_session_id }));
+    this.movies.getSessionId().then((result) =>
+      this.setState({
+        sessionId: result.guest_session_id ? result.guest_session_id : '',
+      }),
+    );
     this.updateList();
   }
 
@@ -62,6 +66,10 @@ class App extends Component<AppProps, AppState> {
     if (currentPage !== prevState.currentPage || currentTab !== prevState.currentTab) {
       this.updateList();
     }
+  }
+
+  componentDidCatch(error: Error) {
+    this.onError(error);
   }
 
   componentWillUnmount() {
@@ -111,9 +119,7 @@ class App extends Component<AppProps, AppState> {
   onRateMovie = (id: number, rating: number) => {
     const { sessionId } = this.state;
     this.ratedMovies.set(id, rating);
-    console.log(this.ratedMovies);
     this.movies.rateMovie(sessionId, id, rating)
-      .then((result) => console.log('rate movie', result))
       .catch(this.onError);
   };
 
@@ -167,16 +173,14 @@ class App extends Component<AppProps, AppState> {
       hideOnSinglePage,
       loading,
       moviesList,
-      sessionId,
       totalMovies,
       queryString,
     } = this.state;
 
-    console.log(sessionId);
     const { TabPane } = Tabs;
     const errorBlock = error && <Alert message="Error" description={errorMessage} type="error" />;
     const search = currentTab === 'Search' && <Search setQuery={this.onSetQuery} queryString={queryString} />;
-    const spinner = loading && <Spin tip="Loading..." />;
+    const spinner = loading && <Spin className="spin" tip="Loading..." />;
     const content = !(error || loading) && hasMovies && <MoviesList moviesList={moviesList} onRateMovie={this.onRateMovie} ratedMovies={this.ratedMovies} />;
     const pagination = !(error || loading) && hasMovies && (
       <Pagination

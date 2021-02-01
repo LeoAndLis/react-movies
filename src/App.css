@@ -5,9 +5,12 @@
   padding: 15px;
 }
 
+.spin {
+  display: block;
+  margin: 50px auto;
+}
+
 .movies {
-  display: flex;
-  justify-content: center;
   margin-bottom: 20px;
 }
 

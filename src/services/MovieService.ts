@@ -1,4 +1,23 @@
 import { transformMovieData, transformGenresList } from './DataProcessing';
+import MovieData from '../components/MovieCard/MovieData';
+
+type GetMoviesData = {
+  currentPage: number;
+  movieList: MovieData[];
+  totalPages: number;
+  totalResults: number;
+};
+
+type GetSessionId = {
+  success?: boolean;
+  guest_session_id?: string;
+  expires_at?: string;
+};
+
+type RateMovie = {
+  status_code?: number;
+  status_message?: string;
+};
 
 export default class MovieService {
   protected readonly API_KEY = 'b25f126af2294cd8333cc6c198c6c174';
@@ -48,9 +67,14 @@ export default class MovieService {
     return response.json();
   }
 
-  private async getMovies(path: string, params: any = {}) {
-    const { page: currentPage, results, total_pages: totalPages, total_results: totalResults } = await this.getResource(
-      `${path}`,
+  private async getMovies(path: string, params: any = {}): Promise<GetMoviesData> {
+    const {
+      page: currentPage,
+      results,
+      total_pages: totalPages,
+      total_results: totalResults,
+    } = await this.getResource(
+      path,
       params,
     );
 
@@ -63,7 +87,7 @@ export default class MovieService {
     return { currentPage, movieList, totalPages, totalResults };
   }
 
-  public getSearchedMovies(query: string, page: number = 1) {
+  public getSearchedMovies(query: string, page: number = 1): Promise<GetMoviesData> {
     const params = {
       query,
       page,
@@ -72,21 +96,21 @@ export default class MovieService {
     return this.getMovies(this.API_SEARCH_MOVIE_PATH, params);
   }
 
-  public getRatedMovies(sessionId: string) {
+  public getRatedMovies(sessionId: string): Promise<GetMoviesData> {
     const path = this.API_GET_RATED_MOVIES_PATH.replace('{guest_session_id}', sessionId);
     return this.getMovies(path);
   }
 
-  public async getGenres() {
+  public async getGenres(): Promise<Map<number, string>> {
     const respond = await this.getResource(this.API_SEARCH_MOVIE_GENRES_PATH);
     return transformGenresList(respond.genres);
   }
 
-  public getSessionId() {
+  public getSessionId(): Promise<GetSessionId> {
     return this.getResource(this.API_CREATE_GUEST_SESSION_PATH);
   }
 
-  public rateMovie(sessionId: string, movieId: number, value: number) {
+  public rateMovie(sessionId: string, movieId: number, value: number): Promise<RateMovie> {
     const path = this.API_RATE_MOVIE_PATH.replace('{movie_id}', movieId.toString());
     const body = { value };
     const params = { guest_session_id: sessionId };
