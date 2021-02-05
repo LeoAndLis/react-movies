@@ -115,6 +115,7 @@ class App extends Component<AppProps, AppState> {
         currentTab: newTab,
         loading: true,
         error: false,
+        currentPage: 1,
       });
     }
   };
@@ -147,7 +148,7 @@ class App extends Component<AppProps, AppState> {
     switch (currentTab) {
       case 'Rated':
         this.movieService
-          .getRatedMovies(sessionId)
+          .getRatedMovies(sessionId, currentPage)
           .then((result) => {
             this.setMoviesList(result);
           })

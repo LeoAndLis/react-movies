@@ -62,12 +62,12 @@ type GenresListElement = {
 };
 
 function transformGenresList(genresList: any): Record<number, string> {
-  const formatedGenres: Record<number, string> = {};
+  const formattedGenres: Record<number, string> = {};
   genresList.forEach((element: GenresListElement) => {
-    formatedGenres[element.id] = element.name;
+    formattedGenres[element.id] = element.name;
   });
 
-  return formatedGenres;
+  return formattedGenres;
 }
 
 export { transformMovieData, transformGenresList };

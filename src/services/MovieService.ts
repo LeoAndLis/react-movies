@@ -52,9 +52,9 @@ export default class MovieService {
     return this.getMovies(this.API_SEARCH_MOVIE_PATH, params);
   }
 
-  public getRatedMovies(sessionId: string): Promise<GetMoviesData> {
+  public getRatedMovies(sessionId: string, page: number = 1): Promise<GetMoviesData> {
     const path = this.API_GET_RATED_MOVIES_PATH.replace('{guest_session_id}', sessionId);
-    return this.getMovies(path);
+    return this.getMovies(path, { page });
   }
 
   public rateMovie(sessionId: string, movieId: number, value: number): Promise<RateMovie> {
