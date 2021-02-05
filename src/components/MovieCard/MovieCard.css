@@ -100,6 +100,10 @@
   margin-right: 2px;
 }
 
+.voting-spin {
+  padding-top: 9px;
+}
+
 @media screen and (min-width: 477px) {
   .card {
     column-gap: 20px;

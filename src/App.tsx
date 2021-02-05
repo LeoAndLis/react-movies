@@ -19,10 +19,12 @@ type AppState = {
   alertMessage: string;
   currentPage: number;
   currentTab: string;
+  defaultPageSize: number;
   error: boolean;
   genresList: Record<number, string>;
   loading: boolean;
   moviesList: MovieData[];
+  ratedMovies: Record<number, number>;
   sessionId: string;
   totalMovies: number;
   queryString: string;
@@ -37,18 +39,16 @@ class App extends Component<AppProps, AppState> {
 
   movieService = new MovieService();
 
-  defaultPageSize = 20;
-
-  ratedMovies = new Map();
-
   state: AppState = {
     alertMessage: '',
     currentPage: 1,
     currentTab: 'Search',
+    defaultPageSize: 20,
     error: false,
     genresList: {},
     loading: false,
     moviesList: [],
+    ratedMovies: {},
     sessionId: '',
     totalMovies: 0,
     queryString: '',
@@ -122,8 +122,18 @@ class App extends Component<AppProps, AppState> {
 
   onRateMovie = (id: number, rating: number) => {
     const { sessionId } = this.state;
-    this.ratedMovies.set(id, rating);
     this.movieService.rateMovie(sessionId, id, rating)
+      .then((result) => {
+        if ( result.status_code === 1 ) {
+          this.setState(({ratedMovies: oldRatedMovies}) => {
+            const ratedMovies = { ...oldRatedMovies, [id]: rating};
+            return {ratedMovies};
+          });
+        } else {
+          const error = new Error(result.status_message);
+          this.onError(error);
+        }
+      })
       .catch(this.onError);
   };
 
@@ -175,10 +185,12 @@ class App extends Component<AppProps, AppState> {
       alertMessage,
       currentPage,
       currentTab,
+      defaultPageSize,
       error,
       genresList,
       loading,
       moviesList,
+      ratedMovies,
       totalMovies,
       queryString,
     } = this.state;
@@ -192,11 +204,11 @@ class App extends Component<AppProps, AppState> {
     const errorBlock = error && <Alert message={alertType.toUpperCase()} description={alertMessage} type={alertType} />;
     const search = currentTab === 'Search' && <Search setQuery={this.onSetQuery} queryString={queryString} />;
     const spinner = loading && <Spin className="spin" tip="Loading..." />;
-    const content = !(error || loading) && !!totalMovies && <MoviesList moviesList={moviesList} onRateMovie={this.onRateMovie} ratedMovies={this.ratedMovies} />;
+    const content = !(error || loading) && !!totalMovies && <MoviesList moviesList={moviesList} onRateMovie={this.onRateMovie} ratedMovies={ratedMovies} />;
     const pagination = !(error || loading) && !!totalMovies && (
       <Pagination
         current={currentPage}
-        defaultPageSize={this.defaultPageSize}
+        defaultPageSize={defaultPageSize}
         onChange={this.onChangePage}
         size="small"
         hideOnSinglePage

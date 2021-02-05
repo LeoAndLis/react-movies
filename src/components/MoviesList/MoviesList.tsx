@@ -7,7 +7,7 @@ import './MoviesList.css';
 type MoviesListProps = {
   moviesList: MovieData[];
   onRateMovie: (id: number, rating: number) => void;
-  ratedMovies: Map<number, number>
+  ratedMovies: Record<number, number>
 };
 
 function MoviesList({ moviesList, onRateMovie, ratedMovies }: MoviesListProps) {
