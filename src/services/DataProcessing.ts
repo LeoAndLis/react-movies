@@ -61,10 +61,10 @@ type GenresListElement = {
   name: string;
 };
 
-function transformGenresList(genresList: any): Map<number, string> {
-  const formatedGenres = new Map();
+function transformGenresList(genresList: any): Record<number, string> {
+  const formatedGenres: Record<number, string> = {};
   genresList.forEach((element: GenresListElement) => {
-    formatedGenres.set(element.id, element.name);
+    formatedGenres[element.id] = element.name;
   });
 
   return formatedGenres;

@@ -51,7 +51,7 @@ class MovieCard extends Component<MovieCardProps, MovieCardState> {
           <ul className="genre-list">
             {movieData.genreIds.map((genreId) => (
               <li key={genreId} className="genre-list__item">
-                {genresList.get(genreId)}
+                {genresList[genreId]}
               </li>
             ))}
           </ul>

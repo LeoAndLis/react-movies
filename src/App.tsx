@@ -4,6 +4,8 @@ import { debounce } from 'lodash';
 
 import MoviesList from './components/MoviesList/MoviesList';
 import Search from './components/Search/Search';
+import AuthService from './services/AuthService';
+import GenresService from './services/GenresService';
 import MovieService from './services/MovieService';
 import { GenresListProvider } from './components/GenresListContext/GenresListContext';
 
@@ -11,13 +13,14 @@ import MovieData from './components/MovieCard/MovieData';
 
 import './App.css';
 
+type AlertType = 'error' | 'info' | 'success' | 'warning' | undefined;
+
 type AppState = {
+  alertMessage: string;
   currentPage: number;
   currentTab: string;
   error: boolean;
-  errorMessage: string;
-  hasMovies: boolean;
-  hideOnSinglePage: boolean;
+  genresList: Record<number, string>;
   loading: boolean;
   moviesList: MovieData[];
   sessionId: string;
@@ -28,37 +31,38 @@ type AppState = {
 type AppProps = {};
 
 class App extends Component<AppProps, AppState> {
-  movies = new MovieService();
+  authService = new AuthService();
+
+  genresService = new GenresService();
+
+  movieService = new MovieService();
+
+  defaultPageSize = 20;
 
   ratedMovies = new Map();
 
-  genresList = new Map();
-
   state: AppState = {
+    alertMessage: '',
     currentPage: 1,
     currentTab: 'Search',
     error: false,
-    errorMessage: '',
-    hasMovies: false,
-    hideOnSinglePage: true,
-    loading: true,
+    genresList: {},
+    loading: false,
     moviesList: [],
     sessionId: '',
     totalMovies: 0,
-    queryString: 'return',
+    queryString: '',
   };
 
   componentDidMount() {
-    this.movies.getGenres().then((genres) => {
-      this.genresList = new Map(genres.entries());
-      return this.genresList;
+    this.genresService.getGenres().then((genresList) => {
+      this.setState({genresList});
     });
-    this.movies.getSessionId().then((result) =>
+    this.authService.getSessionId().then((result) =>
       this.setState({
         sessionId: result.guest_session_id ? result.guest_session_id : '',
       }),
     );
-    this.updateList();
   }
 
   componentDidUpdate(prevProps: Readonly<AppProps>, prevState: Readonly<AppState>) {
@@ -80,7 +84,6 @@ class App extends Component<AppProps, AppState> {
     if (queryString === '') {
       this.setState({
         error: false,
-        hasMovies: false,
       });
       return;
     }
@@ -119,14 +122,14 @@ class App extends Component<AppProps, AppState> {
   onRateMovie = (id: number, rating: number) => {
     const { sessionId } = this.state;
     this.ratedMovies.set(id, rating);
-    this.movies.rateMovie(sessionId, id, rating)
+    this.movieService.rateMovie(sessionId, id, rating)
       .catch(this.onError);
   };
 
   onError = (error: Error) => {
     this.setState({
       error: true,
-      errorMessage: error.message,
+      alertMessage: error.message,
       loading: false,
     });
   };
@@ -135,7 +138,6 @@ class App extends Component<AppProps, AppState> {
     this.setState({
       moviesList: result.movieList,
       loading: false,
-      hasMovies: !!result.totalResults,
       totalMovies: result.totalResults,
     });
   };
@@ -144,7 +146,7 @@ class App extends Component<AppProps, AppState> {
     const { currentPage, queryString, currentTab, sessionId } = this.state;
     switch (currentTab) {
       case 'Rated':
-        this.movies
+        this.movieService
           .getRatedMovies(sessionId)
           .then((result) => {
             this.setMoviesList(result);
@@ -153,42 +155,50 @@ class App extends Component<AppProps, AppState> {
         break;
       default:
       case 'Search':
-        this.movies
-          .getSearchedMovies(queryString, currentPage)
-          .then((result) => {
-            this.setMoviesList(result);
-          })
-          .catch(this.onError);
+        if ( queryString === '' ) {
+          this.setState({loading: false});
+        } else {
+          this.movieService
+            .getSearchedMovies(queryString, currentPage)
+            .then((result) => {
+              this.setMoviesList(result);
+            })
+            .catch(this.onError);
+        }
         break;
     }
   }
 
   render() {
     const {
+      alertMessage,
       currentPage,
       currentTab,
       error,
-      errorMessage,
-      hasMovies,
-      hideOnSinglePage,
+      genresList,
       loading,
       moviesList,
       totalMovies,
       queryString,
     } = this.state;
 
+    let alertType: AlertType = 'error';
+    if (alertMessage === 'No results') {
+      alertType = 'info';
+    }
+
     const { TabPane } = Tabs;
-    const errorBlock = error && <Alert message="Error" description={errorMessage} type="error" />;
+    const errorBlock = error && <Alert message={alertType.toUpperCase()} description={alertMessage} type={alertType} />;
     const search = currentTab === 'Search' && <Search setQuery={this.onSetQuery} queryString={queryString} />;
     const spinner = loading && <Spin className="spin" tip="Loading..." />;
-    const content = !(error || loading) && hasMovies && <MoviesList moviesList={moviesList} onRateMovie={this.onRateMovie} ratedMovies={this.ratedMovies} />;
-    const pagination = !(error || loading) && hasMovies && (
+    const content = !(error || loading) && !!totalMovies && <MoviesList moviesList={moviesList} onRateMovie={this.onRateMovie} ratedMovies={this.ratedMovies} />;
+    const pagination = !(error || loading) && !!totalMovies && (
       <Pagination
         current={currentPage}
-        defaultPageSize={20}
-        hideOnSinglePage={hideOnSinglePage}
+        defaultPageSize={this.defaultPageSize}
         onChange={this.onChangePage}
         size="small"
+        hideOnSinglePage
         showSizeChanger={false}
         total={totalMovies}
       />
@@ -204,7 +214,7 @@ class App extends Component<AppProps, AppState> {
           {search}
         </section>
         <section className="movies">
-          <GenresListProvider value={new Map(this.genresList.entries())}>
+          <GenresListProvider value={genresList}>
             {errorBlock}
             {spinner}
             {content}
