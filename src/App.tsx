@@ -76,10 +76,6 @@ class App extends Component<AppProps, AppState> {
     this.onError(error);
   }
 
-  componentWillUnmount() {
-    console.log('componentWillUnmount');
-  }
-
   onSetQuery = debounce((queryString: string) => {
     if (queryString === '') {
       this.setState({
