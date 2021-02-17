@@ -52,7 +52,6 @@ class MovieCard extends Component<MovieCardProps, MovieCardState> {
     const { loadingRating } = this.state;
     const { movieData, ratedMovies } = this.props;
     const { id, title, overview, posterPath, releaseDate, voteAverage } = movieData;
-    console.log(`render movie card ${ title }`);
     const genres = (
       <GenresListConsumer>
         {(genresList) => (
